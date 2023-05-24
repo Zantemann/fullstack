@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const Filter = ({ newFilter, handleFilterChange }) => (
   <div>
@@ -38,6 +39,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setFilter] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personsService
@@ -57,8 +60,16 @@ const App = () => {
         .create(newPerson)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          console.log(returnedPerson)
+          setSuccessMessage(
+            `Added ${newPerson.name}`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
+        .catch(error => {
+          console.log(error);
+        });
     }
     setNewName('')
     setNewNumber('')
@@ -73,7 +84,12 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
-          console.log(id)
+          setSuccessMessage(
+            `Deleted ${person.name}`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
         .catch(error => {
           console.log(error)
@@ -92,10 +108,21 @@ const App = () => {
         .update(id, updatedPerson)
         .then(returnedPerson => {
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
+          setSuccessMessage(
+            `Updated ${updatedPerson.name}`
+          )
+          setTimeout(() => {
+            setSuccessMessage(null)
+          }, 5000)
         })
-        .catch(error => {
+        .catch((error) => {
+          setErrorMessage(`Information of ${person.name} has already been removed from server`)
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
+          setPersons(persons.filter(person => person.id !== id))
           console.log(error)
-        })
+        });
     }
   }
 
@@ -118,7 +145,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={successMessage} className="success"/>
+      <Notification message={errorMessage} className="error" />
       <Filter filter={newFilter} handleFilterChange={handleFilterChange} />
       
       <h3>add a new</h3>
@@ -133,7 +161,7 @@ const App = () => {
       
       <h3>Numbers</h3>
 
-      <Persons filteredPersons={filteredPersons} deletePerson={deletePerson} />      
+      <Persons filteredPersons={filteredPersons} deletePerson={deletePerson} />  
     </div>
   )
 
