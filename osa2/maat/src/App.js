@@ -38,7 +38,7 @@ const showData = (country, weatherData) => {
         {Object.values(country.languages).map((language) => (
           <li key={language}>{language}</li>
         ))}
-      </ul>
+      </ul>F
       <img src={country.flags.png} alt={country.flags.alt} />
       <h2>Weather in {country.capital}</h2>
       <p>Temperature {weatherData?.main?.temp} Celcius</p>
@@ -70,9 +70,9 @@ function App() {
   useEffect(() => {
     console.log(filteredCountries.length)
     if (filteredCountries.length === 1) {
-      handleCountry(filteredCountries[0]);
+      handleCountry(filteredCountries[0])
     }
-  }, [newFilter]);
+  }, [newFilter])
 
   const filteredCountries = countries.filter(country =>
     country.name.common.toLowerCase().includes(newFilter.toLowerCase())
