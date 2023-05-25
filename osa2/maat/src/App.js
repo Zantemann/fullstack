@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 
-const Filter = ({ newFilter, handleFilterChange }) => (
+const Filter = ({ filter, handleFilterChange }) => (
   <div>
-    find countries <input value={newFilter} onChange={handleFilterChange} />
+    find countries <input value={filter} onChange={handleFilterChange} />
   </div>
 )
 
@@ -65,11 +65,14 @@ function App() {
     setFilter(event.target.value)
     setSelectedCountry(null)
     setWeatherData(null)
-    
-    if (filteredCountries.length === 1) {
-      handleCountry(filteredCountries[0])
-    }
   }
+
+  useEffect(() => {
+    console.log(filteredCountries.length)
+    if (filteredCountries.length === 1) {
+      handleCountry(filteredCountries[0]);
+    }
+  }, [newFilter]);
 
   const filteredCountries = countries.filter(country =>
     country.name.common.toLowerCase().includes(newFilter.toLowerCase())
@@ -77,10 +80,10 @@ function App() {
 
   const handleCountry = (country) => {
     setSelectedCountry(country)
-    //fetchData(country.latlng[0], country.latlng[1])
+    fetchData(country.latlng[0], country.latlng[1])
   }
 
-  /*const fetchData = async (lat, lon) => {
+  const fetchData = async (lat, lon) => {
     const apiKey = process.env.REACT_APP_API_KEY
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`
   
@@ -88,29 +91,15 @@ function App() {
       const response = await fetch(apiUrl)
       const data = await response.json()
       setWeatherData(data)
+      console.log(data)
     } catch (error) {
       console.log(error)
     }
-  }*/
-    useEffect(() => {
-      if (selectedCountry) {
-        const apiKey = process.env.REACT_APP_API_KEY;
-        const { latlng } = selectedCountry;
-        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latlng[0]}&lon=${latlng[1]}&appid=${apiKey}&units=metric`;
-  
-        fetch(apiUrl)
-          .then((response) => response.json())
-          .then((data) => setWeatherData(data))
-          .catch((error) => console.log(error));
-      }
-    }, [selectedCountry]);
-
-
-  
+  }
 
   return (
     <div>
-      <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
+      <Filter filter={newFilter} handleFilterChange={handleFilterChange} />
       <Countries filteredCountries={filteredCountries} handleCountry={handleCountry}
       selectedCountry={selectedCountry} weatherData={weatherData}/>
     </div>
