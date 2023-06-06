@@ -60,14 +60,20 @@ const App = () => {
         .create(newPerson)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          setSuccessMessage(
-            `Added ${newPerson.name}`
-          )
+          setSuccessMessage(`Added ${newPerson.name}`)
           setTimeout(() => {
             setSuccessMessage(null)
           }, 5000)
         })
-        .catch(error => {
+        .catch((error) => {
+          if (error.response && error.response.data && error.response.data.error) {
+            setErrorMessage(error.response.data.error);
+          } else {
+            setErrorMessage('Error while adding the person');
+          }
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
           console.log(error);
         });
     }
